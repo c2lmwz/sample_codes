@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>WEBGL</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+</head>
+
+<body>
+    <canvas id="render_window" width="1600" height="900"></canvas>
+    <button id="full_screen">FULL</button>
+    <script>
+        let vs_src = `#version 300 es
+        in vec2 vertexPos;
+
+        void main() {
+            gl_Position = vec4(vertexPos, 0, 1.0f);
+        }
+        `;
+
+        let fs_src = `#version 300 es
+        precision highp float;
+        out vec4 finalColor;
+        void main() {
+            finalColor = vec4(1.0f);
+        }
+        `;
+
+        let button = document.getElementById('full_screen');
+        button.onclick = stretch;
+        /** @type {HTMLCanvasElement} */
+        let canvas = document.getElementById('render_window');
+        function stretch() {
+            if (canvas.requestFullscreen) {
+                canvas.requestFullscreen();
+            }
+        }
+
+        const gl = canvas.getContext('webgl2');
+        // use webgl 2.0 version which allows the usage of glsl 3.0 es
+
+
+        function clearWindow() {
+            // Color refreshing
+            gl.clearColor(0.45, 0.5, 0.6, 1);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+        }
+
+
+        clearWindow();
+        const vb_id = gl.createBuffer();
+        const vertices = [-0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5];
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vb_id);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+        const vs_id = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vs_id, vs_src);
+        gl.compileShader(vs_id);
+        if (!gl.getShaderParameter(vs_id, gl.COMPILE_STATUS)) {
+            console.log("Failed to compile vertex shader");
+            alert(gl.getShaderInfoLog(vs_id));
+        }
+
+        const fs_id = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fs_id, fs_src);
+        gl.compileShader(fs_id);
+        if (!gl.getShaderParameter(fs_id, gl.COMPILE_STATUS)) {
+            console.log("Failed to compile frag shader");
+            alert(gl.getShaderInfoLog(fs_id));
+        }
+
+        const sp_id = gl.createProgram();
+        gl.attachShader(sp_id, vs_id);
+        gl.attachShader(sp_id, fs_id);
+        gl.linkProgram(sp_id);
+        if (!gl.getProgramParameter(sp_id, gl.LINK_STATUS)) {
+            console.log("failed to link shader program");
+            alert(gl.getProgramInfoLog(sp_id));
+        }
+
+
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vb_id);
+
+        gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 2 * 4, 0);
+
+        gl.enableVertexAttribArray(0);
+
+        gl.useProgram(sp_id)
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
