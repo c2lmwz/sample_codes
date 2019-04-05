@@ -18,6 +18,7 @@
 <body>
     <canvas id="render_window" width="1600" height="900"></canvas>
     <button id="full_screen">FULL</button>
+    <script src='./gl-matrix-min.js'></script>
     <script>
         let vs_src = `#version 300 es
         in vec2 vertexPos;
@@ -34,13 +35,11 @@
             finalColor = vec4(1.0f);
         }
         `;
-
-        let button = document.getElementById('full_screen');
-        button.onclick = stretch;
+        
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('render_window');
-
-        
+        let button = document.getElementById('full_screen');
+        button.onclick = stretch;
         function stretch() {
             if (canvas.requestFullscreen) {
                 canvas.requestFullscreen();
@@ -49,7 +48,6 @@
 
         const gl = canvas.getContext('webgl2');
         // use webgl 2.0 version which allows the usage of glsl 3.0 es
-
 
         function clearWindow() {
             // Color refreshing
